@@ -5,7 +5,7 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = merge(common, {
     mode: 'production', //生产模式 执行代码压缩
-    devtool: 'source-map',
+    //devtool: 'source-map',
     node: {
         setImmediate: false,
         process: 'mock',
@@ -15,7 +15,7 @@ module.exports = merge(common, {
         tls: 'empty',
         child_process: 'empty'
     },
-    optimization: {
+    optimization: {//公共模块分离
         moduleIds: 'named',
         chunkIds: 'total-size',
         removeEmptyChunks: true,
@@ -24,13 +24,13 @@ module.exports = merge(common, {
         splitChunks: {
             cacheGroups: {
                 vendors: {
-                    name: 'chunk-vendors',
+                    name: 'chunk-vendors', //第三方公共模块
                     test: /[\\\/]node_modules[\\\/]/,
                     priority: -10,
                     chunks: 'initial'
                 },
                 common: {
-                    name: 'chunk-common',
+                    name: 'chunk-common', //常用模块
                     minChunks: 2,
                     priority: -20,
                     chunks: 'initial',
@@ -42,7 +42,7 @@ module.exports = merge(common, {
     module: {
         wrappedContextRecursive: false,
 
-        rules: [{
+        rules: [{ //css处理
                 test: /\.(css|sass|scss)(\?.*)?$/,
                 use: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
@@ -50,7 +50,7 @@ module.exports = merge(common, {
                     use: ['css-loader', 'sass-loader']
                 })
             },
-            {
+            { //html文件处理
                 test: /\.html(\?.*)?$/,
                 exclude: /index\.html(\?.*)?$/,
                 use: [{
@@ -62,16 +62,15 @@ module.exports = merge(common, {
                 }, {
                     loader: "extract-loader",
                     options: {
-                        attrs: [':src', ':data-src', ':href'],
+                        attrs: [':src',':href'],
                     }
                 }, {
                     loader: 'html-loader',
                     options: {
-                        root: '..',
-                        attrs: [':src', ':data-src', ':href'],
+                        attrs: [':src',':href'],
                     }
                 }]
-            }
+            },
         ]
     },
     plugins: [

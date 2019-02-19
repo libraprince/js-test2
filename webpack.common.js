@@ -9,7 +9,7 @@ module.exports = {
             // 解析模块请求的选项（不适用于对 loader 解析）
             "@": path.resolve(__dirname, "src")
         },
-        extensions: [".js", ".json", ".jsx", ".css", "scss", "sass", "html"] // 使用的扩展名
+        extensions: [".js", ".json", ".jsx", ".css", ".scss", ".sass", ".html"] // 使用的扩展名
     },
     entry: {
         main: '@/index',
@@ -17,8 +17,8 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].bundle.js',
-        chunkFilename: "js/[name].[hash:8].js", // 长效缓存(/guides/caching)
+        filename: 'js/[name].bundle.js',
+        chunkFilename: "js/vendor/[name].[hash:8].js", // 长效缓存(/guides/caching)
         //crossOriginLoading: "anonymous",
         /*library`:"MyLibrary",
         libraryTarget: "umd"*/
@@ -27,8 +27,9 @@ module.exports = {
         rules: [{
                 test: /\.(css|sass|scss)(\?.*)?$/,
                 use: ['style-loader', 'css-loader', 'sass-loader']
-            }, {
-                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+            },
+            {
+                test: /\.(png|jpe?g|gif|webp)(\?.*)?$/,
                 use: [
                     /* config.module.rule('images').use('url-loader') */
                     {
@@ -47,11 +48,39 @@ module.exports = {
             },
             {
                 test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-                use: ['url-loader']
+                use: [
+                    /* config.module.rule('media').use('url-loader') */
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 4096,
+                            fallback: {
+                                loader: 'file-loader',
+                                options: {
+                                    name: 'media/[name].[hash:8].[ext]'
+                                }
+                            }
+                        }
+                    }
+                ]
             },
             {
-                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                use: ['url-loader']
+                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/i,
+                use: [
+                    /* config.module.rule('fonts').use('url-loader') */
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 4096,
+                            fallback: {
+                                loader: 'file-loader',
+                                options: {
+                                    name: 'fonts/[name].[hash:8].[ext]'
+                                }
+                            }
+                        }
+                    }
+                ]
             },
             {
                 test: /\.(csv|tsv)(\?.*)?$/,
