@@ -1,5 +1,6 @@
 //该配置公用一般配置
 const path = require('path');
+const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
@@ -12,7 +13,7 @@ module.exports = {
         extensions: [".js", ".json", ".jsx", ".css", ".scss", ".sass", ".html"] // 使用的扩展名
     },
     entry: {
-        main: '@/index',
+        main: ['babel-polyfill', '@/index'],
         other: '@/model/name'
     },
     output: {
@@ -89,11 +90,17 @@ module.exports = {
             {
                 test: /\.xml(\?.*)?$/,
                 use: ['xml-loader']
+            },
+            {
+                test: /\.js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
             }
-            /*,{
-                            test: /\.html(\?.*)?$/,
-                            loader:'html-loader'
-                        }*/
         ]
     },
     plugins: [ //以下插件需要npm安装
